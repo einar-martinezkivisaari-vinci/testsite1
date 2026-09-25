@@ -1,0 +1,18 @@
+@baseUrl = http://localhost:3000/api/expenses
+
+### GET all
+GET {{baseUrl}}
+### POST object
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "id":"999",
+    "date":"2025-01-16",
+    "description":"Test expense",
+    "payer":"Alice",
+    "amount": 10
+}
+
+### Reset db
+POST {{baseUrl}}/reset
