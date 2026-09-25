@@ -8,8 +8,8 @@ const initJsonDbPath = path.join("./data/expenses.init.json");
 
 
 export const getAllExpenses = async (): Promise<Expense[]> => {
-    const expdbo = await db.orm.public.Expense.all()
-    const expenses: Expense[] = []
+    const expdbo = await db.orm.public.Expense.all();
+    const expenses: Expense[] = [];
     expdbo.map((e) => {
         expenses.push({
             id: `${e.id}`,
