@@ -5,10 +5,10 @@ import expensesRouter from './routes/expenses.ts';
 
 const app = express();
 
+app.use(cors({origin: ['http://localhost:5173', /\.onrender\.com$/]}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use("/api", expensesRouter);
-app.use(cors({origin: ['http://localhost:5173', /\.onrender\.com$/]}));
 
 app.get('/ping', (req, res) => {
   res.sendStatus(204);
