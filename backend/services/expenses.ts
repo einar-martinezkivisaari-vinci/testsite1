@@ -1,5 +1,5 @@
 import path from "path";
-import type { Expense } from "../types/Expense.ts";
+import type { Expense, NewExpense } from "../types/Expense.ts";
 import fs from "fs";
 import { db } from "../src/prisma/db.ts";
 
@@ -22,9 +22,15 @@ export const getAllExpenses = async (): Promise<Expense[]> => {
     return expenses;
 }
 
-export const addExpense = async (expense:Expense): Promise<Expense> => {
-    await db.orm.public.Expense.create(expense);
-    return expense;
+export const addExpense = async (expense:NewExpense): Promise<Expense> => {
+    const ret = await db.orm.public.Expense.create(expense);
+    return {
+        id: ret.id.toString(),
+        date:ret.date,
+        description:ret.description,
+        payer:ret.payer,
+        amount:ret.amount,
+    };
 }
 
 // export const resetExpenses = (): Expense[] => {

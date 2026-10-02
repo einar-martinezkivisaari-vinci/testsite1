@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addExpense, getAllExpenses} from "../services/expenses.ts";
-import type { Expense } from "../types/Expense.ts";
+import type { Expense, NewExpense } from "../types/Expense.ts";
 
 const router = Router();
 
@@ -16,10 +16,9 @@ router.post("/expenses", (req, res) => {
     )
     return res.sendStatus(400);
 
-    const { id, date, description, payer, amount} = req.body as Expense;
+    const { date, description, payer, amount} = req.body as NewExpense;
 
-    const expense: Expense = {
-        id,
+    const expense: NewExpense = {
         date,
         description,
         payer,
