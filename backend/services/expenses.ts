@@ -1,7 +1,7 @@
 import path from "path";
 import type { NewExpense } from "../types/NewExpense.ts";
 import { db } from "../src/prisma/db.ts";
-import { Expense } from "../types/Expense.ts";
+import type { Expense } from "../types/Expense.ts";
 
 const jsonDbPath = path.join("./data/expenses.json");
 const initJsonDbPath = path.join("./data/expenses.init.json");
