@@ -30,7 +30,7 @@ const Home = () => {
   const { expenses, loading, error, addExpense, resetExpenses } = useExpenses();
   return (
     <>
-      {!loading || !error ? (
+      {!loading || !error || expenses ? (
         expenses.map((expense, line) => {
           return (
             <div key={line}>
