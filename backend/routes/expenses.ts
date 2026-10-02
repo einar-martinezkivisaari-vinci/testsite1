@@ -5,10 +5,10 @@ import type { NewExpense } from "../types/NewExpense.ts";
 const router = Router();
 
 router.get("/expenses", async (req, res) => {
-    return res.json(getAllExpenses());
+    return res.json(await getAllExpenses());
 });
 
-router.post("/expenses", (req, res) => {
+router.post("/expenses", async (req, res) => {
     const body: unknown = req.body;
     if (
         !body ||
@@ -25,7 +25,7 @@ router.post("/expenses", (req, res) => {
         amount
     };
 
-    return res.json(addExpense(expense));
+    return res.json(await addExpense(expense));
 })
 
 // router.post("/expenses/reset", (req, res) => {

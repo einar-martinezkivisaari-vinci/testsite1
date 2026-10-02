@@ -20,10 +20,11 @@ const useExpenses = () => {
           `getExpenses error : ${response.status} : ${response.statusText}`,
         );
       setExpenses(await response.json());
-      setLoading(false);
     } catch (err) {
       console.error(err);
       setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
