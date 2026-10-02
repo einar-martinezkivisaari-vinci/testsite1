@@ -1,5 +1,4 @@
-export interface Expense {
-  id: string;
+export interface NewExpense {
   date: string;
   description: string;
   payer: string;

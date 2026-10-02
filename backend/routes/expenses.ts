@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addExpense, getAllExpenses} from "../services/expenses.ts";
-import type { Expense, NewExpense } from "../types/Expense.ts";
+import type { NewExpense } from "../types/NewExpense.ts";
 
 const router = Router();
 
