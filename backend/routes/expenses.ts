@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addExpense, getAllExpenses} from "../services/expenses.ts";
+import { addExpense, getAllExpenses, resetExpenses} from "../services/expenses.ts";
 import type { NewExpense } from "../types/NewExpense.ts";
 
 const router = Router();
@@ -28,8 +28,8 @@ router.post("/expenses", async (req, res) => {
     return res.json(await addExpense(expense));
 })
 
-// router.post("/expenses/reset", (req, res) => {
-//     return res.json(resetExpenses());
-// })
+router.post("/expenses/reset", async (req, res) => {
+    return res.json(await resetExpenses());
+})
 
 export default router;

@@ -33,7 +33,22 @@ export const addExpense = async (expense:NewExpense): Promise<Expense> => {
     };
 }
 
-// export const resetExpenses = (): Expense[] => {
-//     fs.writeFileSync(jsonDbPath, fs.readFileSync(initJsonDbPath));
-//     return getAllExpenses();
-// }
+export const resetExpenses = async(): Promise<Expense[]> => {
+    await db.orm.public.Expense.where((p) => p.id.gt(0)).deleteAll();
+    const expdbo = await db.orm.public.Expense.createAll([
+        { "id": 1, "date": "2025-01-16", "description": "Example expense #1 from Alice", "payer": "Alice", "amount": 25.5 },
+        { "id": 2, "date": "2025-01-15", "description": "Example expense #2 from Bob", "payer": "Bob", "amount": 35 },
+        { "id": 3, "date": "2025-01-15", "description": "Example expense #3 from Alice", "payer": "Alice", "amount": 2 }
+    ]);
+    const expenses: Expense[] = [];
+    expdbo.map((e) => {
+        expenses.push({
+            id: `${e.id}`,
+            date: e.date,
+            description: e.description,
+            payer: e.payer,
+            amount: e.amount
+        })
+    })
+    return expenses;
+}
