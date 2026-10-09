@@ -30,6 +30,10 @@ const Home = () => {
   const { expenses, loading, error, addExpense, resetExpenses } = useExpenses();
   return (
     <>
+      <ExpenseAdd addFunction={addExpense} />
+      <button onClick={() => resetExpenses()}>Reset Data</button>
+      <br />
+      
       {!loading || !error || Array.isArray(expenses) ? (
         expenses.map((expense, line) => {
           return (
@@ -44,10 +48,7 @@ const Home = () => {
       ) : (
         <div>Loading</div>
       )}
-
-      <br />
-      <ExpenseAdd addFunction={addExpense} />
-      <button onClick={() => resetExpenses()}>Reset Data</button>
+      
     </>
   );
 };

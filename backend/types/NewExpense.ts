@@ -1,6 +1,6 @@
 export interface NewExpense {
   date: string;
   description: string;
-  payer: string;
+  payer: number;
   amount: number;
 }

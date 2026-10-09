@@ -21,8 +21,8 @@ const ExpenseAdd = ({ addFunction }: ExpenseAddProps) => {
       <label>
         Name:
         <select {...register("payer", { required: true })}>
-          <option value="Alice">Alice</option>
-          <option value="Bob">Bob</option>
+          <option value="1">Alice</option>
+          <option value="2">Bob</option>
         </select>
       </label>
       <label>

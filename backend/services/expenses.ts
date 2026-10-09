@@ -15,7 +15,7 @@ export const getAllExpenses = async (): Promise<Expense[]> => {
             id: `${e.id}`,
             date: e.date,
             description: e.description,
-            payer: e.payer,
+            payer: e.payerId,
             amount: e.amount
         })
     })
@@ -23,12 +23,17 @@ export const getAllExpenses = async (): Promise<Expense[]> => {
 }
 
 export const addExpense = async (expense:NewExpense): Promise<Expense> => {
-    const ret = await db.orm.public.Expense.create(expense);
+    const ret = await db.orm.public.Expense.create({
+        description:expense.description,
+        amount:expense.amount,
+        date:expense.date,
+        payerId:expense.payer,
+    });
     return {
         id: ret.id.toString(),
         date:ret.date,
         description:ret.description,
-        payer:ret.payer,
+        payer:ret.payerId,
         amount:ret.amount,
     };
 }
@@ -36,9 +41,9 @@ export const addExpense = async (expense:NewExpense): Promise<Expense> => {
 export const resetExpenses = async(): Promise<Expense[]> => {
     await db.orm.public.Expense.where((p) => p.id.gt(0)).deleteAll();
     const expdbo = await db.orm.public.Expense.createAll([
-        { "id": 1, "date": "2025-01-16", "description": "Example expense #1 from Alice", "payer": "Alice", "amount": 25.5 },
-        { "id": 2, "date": "2025-01-15", "description": "Example expense #2 from Bob", "payer": "Bob", "amount": 35 },
-        { "id": 3, "date": "2025-01-15", "description": "Example expense #3 from Alice", "payer": "Alice", "amount": 2 }
+        { "date": "2025-01-16", "description": "Example expense #1 from Alice", "payerId": 1, "amount": 25.5 },
+        { "date": "2025-01-15", "description": "Example expense #2 from Bob", "payerId": 2, "amount": 35 },
+        { "date": "2025-01-15", "description": "Example expense #3 from Alice", "payerId": 1, "amount": 2 }
     ]);
     const expenses: Expense[] = [];
     expdbo.map((e) => {
@@ -46,7 +51,7 @@ export const resetExpenses = async(): Promise<Expense[]> => {
             id: `${e.id}`,
             date: e.date,
             description: e.description,
-            payer: e.payer,
+            payer: e.payerId,
             amount: e.amount
         })
     })

@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8d8973b135ef6b4e61caa4d9e62fd955c211c1e29625facd70064b627a97569f'>;
+  StorageHashBase<'63492426b9d886fd5f2ec6fa17050a0bbd15e2686d045d72057609543cca8d6f'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -253,7 +253,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'];
       readonly amount: CodecTypes['pg/float8@1']['output'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly payerId: CodecTypes['pg/int4@1']['output'];
     };
     readonly ExpenseUser: {
@@ -263,7 +263,7 @@ export type FieldOutputTypes = {
     readonly Transfer: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly amount: CodecTypes['pg/float8@1']['output'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly sourceId: CodecTypes['pg/int4@1']['output'];
       readonly targetId: CodecTypes['pg/int4@1']['output'];
     };
@@ -281,7 +281,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'];
       readonly amount: CodecTypes['pg/float8@1']['input'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly payerId: CodecTypes['pg/int4@1']['input'];
     };
     readonly ExpenseUser: {
@@ -291,7 +291,7 @@ export type FieldInputTypes = {
     readonly Transfer: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly amount: CodecTypes['pg/float8@1']['input'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly sourceId: CodecTypes['pg/int4@1']['input'];
       readonly targetId: CodecTypes['pg/int4@1']['input'];
     };
@@ -307,7 +307,7 @@ export type StorageColumnTypes = {
   readonly public: {
     readonly Expense: {
       readonly amount: CodecTypes['pg/float8@1']['output'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly payerId: CodecTypes['pg/int4@1']['output'];
@@ -318,7 +318,7 @@ export type StorageColumnTypes = {
     };
     readonly Transfer: {
       readonly amount: CodecTypes['pg/float8@1']['output'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly sourceId: CodecTypes['pg/int4@1']['output'];
       readonly targetId: CodecTypes['pg/int4@1']['output'];
@@ -335,7 +335,7 @@ export type StorageColumnInputTypes = {
   readonly public: {
     readonly Expense: {
       readonly amount: CodecTypes['pg/float8@1']['input'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly payerId: CodecTypes['pg/int4@1']['input'];
@@ -346,7 +346,7 @@ export type StorageColumnInputTypes = {
     };
     readonly Transfer: {
       readonly amount: CodecTypes['pg/float8@1']['input'];
-      readonly date: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly date: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly sourceId: CodecTypes['pg/int4@1']['input'];
       readonly targetId: CodecTypes['pg/int4@1']['input'];
@@ -365,7 +365,7 @@ export namespace Models {
     id: CodecTypes['pg/int4@1']['output'];
     description: CodecTypes['pg/text@1']['output'];
     amount: CodecTypes['pg/float8@1']['output'];
-    date: CodecTypes['pg/timestamptz-string@1']['output'];
+    date: CodecTypes['pg/timestamptz-temporal@1']['output'];
     payerId: CodecTypes['pg/int4@1']['output'];
     participants: public_User[];
     payer: public_User;
@@ -393,7 +393,7 @@ export namespace Models {
   export type public_Transfer = {
     id: CodecTypes['pg/int4@1']['output'];
     amount: CodecTypes['pg/float8@1']['output'];
-    date: CodecTypes['pg/timestamptz-string@1']['output'];
+    date: CodecTypes['pg/timestamptz-temporal@1']['output'];
     sourceId: CodecTypes['pg/int4@1']['output'];
     targetId: CodecTypes['pg/int4@1']['output'];
     source: public_User;
@@ -452,7 +452,7 @@ type ContractBase = Omit<
                 };
                 readonly date: {
                   readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
@@ -561,7 +561,7 @@ type ContractBase = Omit<
                 };
                 readonly date: {
                   readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
@@ -692,7 +692,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
               readonly payerId: {
@@ -795,7 +795,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
               readonly sourceId: {
