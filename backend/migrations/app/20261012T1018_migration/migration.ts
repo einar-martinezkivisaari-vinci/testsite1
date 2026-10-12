@@ -1,26 +1,30 @@
 #!/usr/bin/env -S node
-import postgres from '@prisma/orm-postgres/runtime';
-import type { Contract as End } from '../../snapshots/63492426b9d886fd5f2ec6fa17050a0bbd15e2686d045d72057609543cca8d6f/contract';
-import endContract from '../../snapshots/63492426b9d886fd5f2ec6fa17050a0bbd15e2686d045d72057609543cca8d6f/contract.json' with { type: 'json' };
-import type { Contract as Start } from '../../snapshots/7bb9681a541e8332d005b8efd97f4a3fc8d9762006a6427e959f417aae118a24/contract';
-import startContract from '../../snapshots/7bb9681a541e8332d005b8efd97f4a3fc8d9762006a6427e959f417aae118a24/contract.json' with { type: 'json' };
-import {
-  Migration,
-  MigrationCLI,
-  col,
-  fn,
-  primaryKey,
-} from '@prisma/orm-postgres/migration';
+import type { Contract as End } from '../../snapshots/8d8973b135ef6b4e61caa4d9e62fd955c211c1e29625facd70064b627a97569f/contract';
+import endContract from '../../snapshots/8d8973b135ef6b4e61caa4d9e62fd955c211c1e29625facd70064b627a97569f/contract.json' with { type: 'json' };
+import { Migration, MigrationCLI, col, fn, primaryKey } from '@prisma/orm-postgres/migration';
 
-const { sql: db, contract } = postgres<End>({ contractJson: endContract });
-
-export default class M extends Migration<Start, End> {
-  override readonly startContractJson = startContract;
+export default class M extends Migration<never, End> {
   override readonly endContractJson = endContract;
 
   override get operations() {
     return [
-      this.dropColumn({ schema: 'public', table: 'Expense', column: 'payer' }),
+      this.createSchema({ schema: 'public' }),
+      this.createTable({
+        schema: 'public',
+        table: 'Expense',
+        columns: [
+          col('amount', 'float8', { notNull: true, codecRef: { codecId: 'pg/float8@1' } }),
+          col('date', 'timestamptz', {
+            notNull: true,
+            default: fn('now()'),
+            codecRef: { codecId: 'pg/timestamptz-string@1' },
+          }),
+          col('description', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('id', 'SERIAL', { notNull: true, codecRef: { codecId: 'pg/int4@1' } }),
+          col('payerId', 'int4', { notNull: true, codecRef: { codecId: 'pg/int4@1' } }),
+        ],
+        constraints: [primaryKey(['id'])],
+      }),
       this.createTable({
         schema: 'public',
         table: 'ExpenseUser',
@@ -38,7 +42,7 @@ export default class M extends Migration<Start, End> {
           col('date', 'timestamptz', {
             notNull: true,
             default: fn('now()'),
-            codecRef: { codecId: 'pg/timestamptz-temporal@1' },
+            codecRef: { codecId: 'pg/timestamptz-string@1' },
           }),
           col('id', 'SERIAL', { notNull: true, codecRef: { codecId: 'pg/int4@1' } }),
           col('sourceId', 'int4', { notNull: true, codecRef: { codecId: 'pg/int4@1' } }),
@@ -57,15 +61,6 @@ export default class M extends Migration<Start, End> {
         ],
         constraints: [primaryKey(['id'])],
       }),
-      this.addColumn({
-        schema: 'public',
-        table: 'Expense',
-        column: col('payerId', 'int4', { codecRef: { codecId: 'pg/int4@1' } }),
-      }),
-      this.dataTransform(contract, 'wipe-expense-before-payer-migration', {
-        run: () => db.public.Expense.delete(),
-      }),
-      this.setNotNull({ schema: 'public', table: 'Expense', column: 'payerId' }),
       this.addUnique({
         schema: 'public',
         table: 'User',
@@ -104,6 +99,15 @@ export default class M extends Migration<Start, End> {
       }),
       this.addForeignKey({
         schema: 'public',
+        table: 'Expense',
+        foreignKey: {
+          name: 'Expense_payerId_fkey',
+          columns: ['payerId'],
+          references: { schema: 'public', table: 'User', columns: ['id'] },
+        },
+      }),
+      this.addForeignKey({
+        schema: 'public',
         table: 'ExpenseUser',
         foreignKey: {
           name: 'ExpenseUser_expenseId_fkey',
@@ -137,15 +141,6 @@ export default class M extends Migration<Start, End> {
         foreignKey: {
           name: 'Transfer_targetId_fkey',
           columns: ['targetId'],
-          references: { schema: 'public', table: 'User', columns: ['id'] },
-        },
-      }),
-      this.addForeignKey({
-        schema: 'public',
-        table: 'Expense',
-        foreignKey: {
-          name: 'Expense_payerId_fkey',
-          columns: ['payerId'],
           references: { schema: 'public', table: 'User', columns: ['id'] },
         },
       }),

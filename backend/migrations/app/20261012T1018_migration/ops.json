@@ -1,42 +1,56 @@
 [
   {
-    "id": "dropColumn.Expense.payer",
-    "label": "Drop column \"payer\" from \"Expense\"",
-    "operationClass": "destructive",
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.Expense",
+    "label": "Create table \"Expense\"",
+    "summary": "Creates table \"Expense\"",
+    "operationClass": "additive",
     "target": {
       "id": "postgres",
       "details": {
         "schema": "public",
-        "objectType": "column",
-        "name": "payer",
-        "table": "Expense"
+        "objectType": "table",
+        "name": "Expense"
       }
     },
     "precheck": [
       {
-        "description": "ensure column \"payer\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "description": "ensure table \"Expense\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
         "params": [
-          "public",
-          "Expense",
-          "payer"
+          "\"public\".\"Expense\""
         ]
       }
     ],
     "execute": [
       {
-        "description": "drop column \"payer\"",
-        "sql": "ALTER TABLE \"public\".\"Expense\" DROP COLUMN \"payer\""
+        "description": "create table \"Expense\"",
+        "sql": "CREATE TABLE \"public\".\"Expense\" (\n  \"amount\" float8 NOT NULL,\n  \"date\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"payerId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
       }
     ],
     "postcheck": [
       {
-        "description": "verify column \"payer\" does not exist",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "description": "verify table \"Expense\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
         "params": [
-          "public",
-          "Expense",
-          "payer"
+          "\"public\".\"Expense\""
         ]
       }
     ]
@@ -154,113 +168,6 @@
         "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
         "params": [
           "\"public\".\"User\""
-        ]
-      }
-    ]
-  },
-  {
-    "id": "column.public.Expense.payerId",
-    "label": "Add column \"payerId\" to \"Expense\"",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "column",
-        "name": "payerId",
-        "table": "Expense"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure column \"payerId\" is missing",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
-        "params": [
-          "public",
-          "Expense",
-          "payerId"
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "add column \"payerId\"",
-        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"payerId\" int4"
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify column \"payerId\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
-        "params": [
-          "public",
-          "Expense",
-          "payerId"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "data_migration.wipe-expense-before-payer-migration",
-    "label": "Data transform: wipe-expense-before-payer-migration",
-    "operationClass": "data",
-    "target": {
-      "id": "postgres"
-    },
-    "precheck": [],
-    "execute": [
-      {
-        "description": "Run wipe-expense-before-payer-migration",
-        "sql": "DELETE FROM \"public\".\"Expense\"",
-        "params": []
-      }
-    ],
-    "postcheck": []
-  },
-  {
-    "id": "alterNullability.setNotNull.Expense.payerId",
-    "label": "Set NOT NULL on \"Expense\".\"payerId\"",
-    "operationClass": "destructive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "column",
-        "name": "payerId",
-        "table": "Expense"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure column \"payerId\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
-        "params": [
-          "public",
-          "Expense",
-          "payerId"
-        ]
-      },
-      {
-        "description": "ensure no NULL values in \"payerId\"",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"Expense\" WHERE \"payerId\" IS NULL) AS \"result\"",
-        "params": []
-      }
-    ],
-    "execute": [
-      {
-        "description": "set NOT NULL on \"payerId\"",
-        "sql": "ALTER TABLE \"public\".\"Expense\" ALTER COLUMN \"payerId\" SET NOT NULL"
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify column \"payerId\" is NOT NULL",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
-        "params": [
-          "public",
-          "Expense",
-          "payerId",
-          "NO"
         ]
       }
     ]
@@ -503,6 +410,48 @@
     ]
   },
   {
+    "id": "foreignKey.Expense.Expense_payerId_fkey",
+    "label": "Add foreign key \"Expense_payerId_fkey\" on \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Expense_payerId_fkey",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Expense_payerId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Expense_payerId_fkey",
+          "public",
+          "\"public\".\"Expense\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Expense_payerId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\"\nADD CONSTRAINT \"Expense_payerId_fkey\"\nFOREIGN KEY (\"payerId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Expense_payerId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Expense_payerId_fkey",
+          "public",
+          "\"public\".\"Expense\""
+        ]
+      }
+    ]
+  },
+  {
     "id": "foreignKey.ExpenseUser.ExpenseUser_expenseId_fkey",
     "label": "Add foreign key \"ExpenseUser_expenseId_fkey\" on \"ExpenseUser\"",
     "operationClass": "additive",
@@ -666,48 +615,6 @@
           "Transfer_targetId_fkey",
           "public",
           "\"public\".\"Transfer\""
-        ]
-      }
-    ]
-  },
-  {
-    "id": "foreignKey.Expense.Expense_payerId_fkey",
-    "label": "Add foreign key \"Expense_payerId_fkey\" on \"Expense\"",
-    "operationClass": "additive",
-    "target": {
-      "id": "postgres",
-      "details": {
-        "schema": "public",
-        "objectType": "foreignKey",
-        "name": "Expense_payerId_fkey",
-        "table": "Expense"
-      }
-    },
-    "precheck": [
-      {
-        "description": "ensure FK \"Expense_payerId_fkey\" does not exist",
-        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "Expense_payerId_fkey",
-          "public",
-          "\"public\".\"Expense\""
-        ]
-      }
-    ],
-    "execute": [
-      {
-        "description": "add FK \"Expense_payerId_fkey\"",
-        "sql": "ALTER TABLE \"public\".\"Expense\"\nADD CONSTRAINT \"Expense_payerId_fkey\"\nFOREIGN KEY (\"payerId\")\nREFERENCES \"public\".\"User\" (\"id\")"
-      }
-    ],
-    "postcheck": [
-      {
-        "description": "verify FK \"Expense_payerId_fkey\" exists",
-        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
-        "params": [
-          "Expense_payerId_fkey",
-          "public",
-          "\"public\".\"Expense\""
         ]
       }
     ]
