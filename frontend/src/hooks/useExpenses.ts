@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Expense } from "../types/Expense";
+import type { Expense, NewExpense } from "../types/Expense";
 
 const useExpenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -28,7 +28,7 @@ const useExpenses = () => {
     }
   };
 
-  const addExpense = async (newExpense: Expense) => {
+  const addExpense = async (newExpense: NewExpense) => {
     try {
       const options = {
         method: "POST",
